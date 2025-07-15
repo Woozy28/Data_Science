@@ -28,4 +28,14 @@ flowers_data = flowers_data.drop(columns='Unnamed: 0')
 
 for columns in flowers_data:
        sns.displot(flowers_data, x=columns, kde=True)
+
+
+plt.figure(10)
+for columns in flowers_data.filter(like= 'length'):
+       sns.violinplot(flowers_data, y=columns)
+
+#find some corelation
+plt.figure(11)
+sns.pairplot(flowers_data, hue = "species")
+
 plt.show()
