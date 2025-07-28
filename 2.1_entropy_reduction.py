@@ -14,5 +14,5 @@ X = data[['X_1','X_2']]
 y = data.Y
 clf.fit(X,y)
 
-tree.plot_tree(clf.fit(X,y))
+tree.plot_tree(clf.fit(X,y)) #watch decision tree
 plt.show()

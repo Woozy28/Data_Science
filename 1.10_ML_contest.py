@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-events_data = pd.read_csv('F:\Phyton\EDU_Data_Science\Data_Science\event_data_train.csv')
-submissions_data = pd.read_csv('F:\Phyton\EDU_Data_Science\Data_Science\submissions_data_train.csv')
+events_data = pd.read_csv('F:\Phyton\event_data_train.csv')
+submissions_data = pd.read_csv('F:\Phyton\submissions_data_train.csv')
 
 
 """
