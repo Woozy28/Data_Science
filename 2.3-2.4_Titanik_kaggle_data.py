@@ -8,6 +8,7 @@ from graphviz import Source
 from IPython.display import display
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
 
 from IPython.display import HTML
 style = "<style>.svg(width:70% !important;height:70% !important;)</style>"
@@ -54,5 +55,13 @@ for max_depth in max_depth_values:
 scores_data_long = pd.melt(scores_data, id_vars=['max_depth'], value_vars=['train_score','test_score','cross_score'], var_name='set_type', value_name='score')
 
 sns.lineplot(data=scores_data_long, x='max_depth', y='score', hue='set_type')
-plt.show()
 
+params = {'criterion':['gini','entropy'], 'max_depth' : range(1,30)}
+
+clf = tree.DecisionTreeClassifier()
+gridSearch_clf = GridSearchCV(clf, params, cv=5)
+
+gridSearch_clf.fit(X_train,y_train)
+#gridSearch_clf.best_params_ - show best collection of parameters
+ 
+ best_clf = gridSearch_clf.best_estimator_

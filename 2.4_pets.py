@@ -22,6 +22,6 @@ X = train_data.drop(['Вид'], axis=1)
 y = train_data['Вид']
 clf.fit(X,y)
 
-predicted_labels = clf.predict(test_data)
+predicted_labels = clf.predict(test_data) # The .predict() method takes input and returns an array of predicted labels.
 prediction_counts = pd.Series(predicted_labels).value_counts()
 print(prediction_counts)
