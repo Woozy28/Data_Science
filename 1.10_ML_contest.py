@@ -89,3 +89,65 @@ users_data = users_data.merge(users_events_data, on='user_id', how='left')
 users_data = users_data.merge(users_days, on='user_id', how='left')
 users_data['passed_corse'] = users_data.passed > 170
 
+user_min_time = events_data.groupby('user_id', as_index=False).agg({
+    'timestamp' : 'min'
+}).rename({
+    'timestamp' : 'min_timestamp'
+},axis=1)
+users_data = users_data.merge(user_min_time, how='left',on='user_id')
+
+events_data_train = pd.DataFrame()
+#for user_id in users_data.user_id:
+#    min_user_time = users_data[users_data.user_id == user_id].min_timestamp.item()
+#    time_threshold = min_user_time + 3 * 24 * 60 * 60
+#    users_events_data = events_data[(events_data.user_id == user_id) & (events_data.timestamp < time_threshold)]
+#    event_data_train = pd.concat([event_data_train, users_events_data])
+events_data['user_time'] = events_data.user_id.map(str) + '_' + events_data.timestamp.map(str)
+
+learning_time_threshold =  3 * 24 * 60 * 60
+user_learning_time_threshold = user_min_time.user_id.map(str) + '_' + (user_min_time.min_timestamp + learning_time_threshold).map(str)
+
+user_min_time['user_learning_time_threshold'] = user_learning_time_threshold
+events_data = events_data.merge(user_min_time[['user_id', 'user_learning_time_threshold']], how='outer')
+
+events_data_train = events_data[events_data.user_time <= events_data.user_learning_time_threshold]
+
+submissions_data['users_time'] = submissions_data.user_id.map(str) + '_' + submissions_data.timestamp.map(str)
+submissions_data = submissions_data.merge(user_min_time[['user_id', 'user_learning_time_threshold']], how='outer')
+submissions_data_train = submissions_data[submissions_data.users_time <= submissions_data.user_learning_time_threshold]
+
+X = submissions_data_train.groupby('user_id').day.nunique().to_frame().reset_index()
+steps_tried = submissions_data_train.groupby('user_id').step_id.nunique().to_frame().reset_index()\
+    .rename(columns={
+        'step_id' : 'step_tried'
+    })
+
+X = X.merge(steps_tried, on = 'user_id', how= 'outer')
+
+X = X.merge(submissions_data_train.pivot_table(index='user_id', 
+                                            columns='submission_status', 
+                                            values='step_id', 
+                                            aggfunc='count', 
+                                            fill_value=0).reset_index()) #count of passed course
+
+
+X['correct_ratio'] = X.correct / (X.correct + X.wrong)
+
+X = X.merge(events_data_train.pivot_table(index='user_id', 
+                                            columns='action', 
+                                            values='step_id', 
+                                            aggfunc='count', 
+                                            fill_value=0).reset_index()[['user_id','viewed']], how='outer') #count of passed course
+
+X = X.fillna(0)
+
+X = X.merge(users_data[['user_id','passed_corse','is_gone_user']], how='outer')
+
+X = X[~((X.is_gone_user == False) & (X.passed_corse == False))]
+
+y= X.passed_corse.map(int)
+X = X.drop(['passed_corse','is_gone_user'], axis=1)
+
+X = X.set_index(X.user_id)
+X = X.drop('user_id', axis=1) 
+print(X.head())
