@@ -9,6 +9,7 @@ from IPython.display import display
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
 
 from IPython.display import HTML
 style = "<style>.svg(width:70% !important;height:70% !important;)</style>"
@@ -64,4 +65,18 @@ gridSearch_clf = GridSearchCV(clf, params, cv=5)
 gridSearch_clf.fit(X_train,y_train)
 #gridSearch_clf.best_params_ - show best collection of parameters
  
- best_clf = gridSearch_clf.best_estimator_
+best_clf = gridSearch_clf.best_estimator_
+
+
+
+clf_rf = RandomForestClassifier()
+parameters = {'n_estimators' : [10, 20, 30], 'max_depth' : [2,5,7,10]} 
+grid_search_cv_clf = GridSearchCV(clf_rf, parameters, cv=5)
+grid_search_cv_clf.fit(X_train, y_train)
+best_clf = grid_search_cv_clf.best_estimator_
+feature_importances = best_clf.feature_importances_
+feature_importances_df = pd.DataFrame({
+    'features' : list(X_train),
+    'feature_importances': feature_importances
+})
+print(feature_importances_df.sort_values('feature_importances', ascending=False))
