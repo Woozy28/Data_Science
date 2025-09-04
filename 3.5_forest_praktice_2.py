@@ -12,19 +12,17 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('https://stepik.org/media/attachments/course/4852/training_mush.csv') #train data
-test_data = pd.read_csv('https://stepik.org/media/attachments/course/4852/testing_mush.csv') #test data. This data we need to predict
-good_data = pd.read_csv("F:\Phyton\esting_y_mush.csv")
-
+data = pd.read_csv('https://stepik.org/media/attachments/course/4852/invasion.csv')
+print(data.head())
+test_data = pd.read_csv('https://stepik.org/media/attachments/course/4852/operative_information.csv')
 
 
 data = data.rename(columns={
-    'class' : 'mushroom_class'
+    'class' : 'ship_class'
 }) # rename because we cant use name class
 
-
-X = data.drop(['mushroom_class'], axis=1) 
-y = data.mushroom_class
+X = data.drop(['ship_class'], axis=1) 
+y = data.ship_class
 
 clf = RandomForestClassifier(random_state=0) 
 parameters = {
@@ -44,22 +42,9 @@ feature_importances_df = pd.DataFrame({
     'feature_importances': feature_importances
 })
 
+print(feature_importances_df)
+
 predict = grid_sech.predict(test_data)
 prediction_counts = pd.Series(predict).value_counts()
 
-
-
-class_names = ['Negative', 'Positive'] # Соответствует 0 и 1
-
-# --- 2. Вычисление Confusion Matrix ---
-cm = confusion_matrix(good_data, predict)
-print("Матрица Ошибок:\n", cm)
-
-# --- 3. Визуализация Confusion Matrix ---
-# Способ 1: С помощью ConfusionMatrixDisplay (рекомендуется для scikit-learn >= 0.22)
-fig, ax = plt.subplots(figsize=(7, 6))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
-disp.plot(cmap='Blues', ax=ax, values_format='d') # 'd' для отображения целых чисел
-ax.set_title('Confusion Matrix')
-plt.tight_layout()
-plt.show()
+print(prediction_counts)
