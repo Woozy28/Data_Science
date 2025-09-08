@@ -13,7 +13,6 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
 data = pd.read_csv('https://stepik.org/media/attachments/course/4852/invasion.csv')
-print(data.head())
 test_data = pd.read_csv('https://stepik.org/media/attachments/course/4852/operative_information.csv')
 
 

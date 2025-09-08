@@ -29,4 +29,4 @@ feature_importances_df = pd.DataFrame({
     'feature_importances': feature_importances
 })
 
-print(feature_importances_df.sort_values())
+print(feature_importances_df)
